@@ -36,6 +36,7 @@ builder.Services.AddScoped<IProjetoService, ProjetoService>();
 builder.Services.AddScoped<IStakeHolderService, StakeHolderService>();
 builder.Services.AddScoped<IFuncionalidadeService, FuncionalidadeService>();
 builder.Services.AddScoped<IRequisitoService, RequisitoService>();
+builder.Services.AddScoped<IDocumentoLinkService, DocumentoLinkService>();
 
 // Configurar logging
 builder.Services.AddLogging(loggingBuilder => {
