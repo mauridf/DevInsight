@@ -1,5 +1,6 @@
 using System.Text;
 using DevInsight.Core.Interfaces;
+using DevInsight.Core.Interfaces.Services;
 using DevInsight.Infrastructure.Data;
 using DevInsight.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,9 +24,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 errorCodesToAdd: null);
         }));
 
-// Register UnitOfWork
+// Registrar UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Registrar AutoMapper
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+// Registrar Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProjetoService, ProjetoService>();
+
+// Configurar logging
+builder.Services.AddLogging(loggingBuilder => {
+    loggingBuilder.AddConsole();
+    loggingBuilder.AddDebug();
+});
 
 // Configurar autenticação JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

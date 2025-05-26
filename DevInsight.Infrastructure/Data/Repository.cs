@@ -1,5 +1,7 @@
-﻿using DevInsight.Core.Interfaces;
+﻿using System.Linq.Expressions;
+using DevInsight.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace DevInsight.Infrastructure.Data;
 
@@ -19,11 +21,6 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
-    {
-        return await _dbSet.ToListAsync();
-    }
-
     public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
@@ -37,5 +34,22 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task DeleteAsync(T entity)
     {
         _dbSet.Remove(entity);
+    }
+
+    public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+    {
+        IQueryable<T> query = _dbSet;
+
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        return await query.ToListAsync();
     }
 }
