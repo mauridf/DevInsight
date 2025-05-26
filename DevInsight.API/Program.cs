@@ -34,6 +34,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProjetoService, ProjetoService>();
 builder.Services.AddScoped<IStakeHolderService, StakeHolderService>();
+builder.Services.AddScoped<IFuncionalidadeService, FuncionalidadeService>();
 
 // Configurar logging
 builder.Services.AddLogging(loggingBuilder => {
