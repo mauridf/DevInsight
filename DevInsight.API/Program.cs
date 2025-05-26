@@ -39,6 +39,7 @@ builder.Services.AddScoped<IRequisitoService, RequisitoService>();
 builder.Services.AddScoped<IDocumentoLinkService, DocumentoLinkService>();
 builder.Services.AddScoped<IReuniaoService, ReuniaoService>();
 builder.Services.AddScoped<ITarefaService, TarefaService>();
+builder.Services.AddScoped<IValidacaoTecnicaService, ValidacaoTecnicaService>();
 
 // Configurar logging
 builder.Services.AddLogging(loggingBuilder => {
