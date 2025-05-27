@@ -213,7 +213,7 @@ A API usa JWT para autenticação. No Swagger:
 | DELETE | `/api/projetos/{projetoId}/documentos-links/{id}`         | Excluir documento link    | Admin, Consultor   |
 
 🛠️ **Tecnologias Utilizadas**
-- **Backend**: .NET 6
+- **Backend**: .NET 9
 - **Banco de Dados**: PostgreSQL
 - **Autenticação**: JWT
 - **Armazenamento**: AWS S3
