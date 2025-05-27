@@ -25,6 +25,12 @@ public class UsuarioRespostaDto
     public string Token { get; set; } = null!;
 }
 
+public class UsuarioAtualizacaoDTO
+{
+    public string Nome { get; set; } = null!;
+    public string? Senha { get; set; }
+}
+
 public class UsuarioConsultaDTO
 {
     public Guid Id { get; set; }
