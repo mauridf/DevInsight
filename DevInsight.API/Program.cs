@@ -1,6 +1,7 @@
 using System.Text;
 using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
+using DevInsight.Core.Services;
 using DevInsight.Infrastructure.Data;
 using DevInsight.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,6 +42,7 @@ builder.Services.AddScoped<IReuniaoService, ReuniaoService>();
 builder.Services.AddScoped<ITarefaService, TarefaService>();
 builder.Services.AddScoped<IValidacaoTecnicaService, ValidacaoTecnicaService>();
 builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
+builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
 
 // Configurar logging
 builder.Services.AddLogging(loggingBuilder => {
