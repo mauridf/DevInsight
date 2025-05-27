@@ -1,4 +1,5 @@
 using System.Text;
+using Amazon.S3;
 using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
 using DevInsight.Core.Services;
@@ -25,6 +26,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 errorCodesToAdd: null);
         }));
 
+// Configuração do AWS S3
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+
 // Registrar UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -43,6 +48,8 @@ builder.Services.AddScoped<ITarefaService, TarefaService>();
 builder.Services.AddScoped<IValidacaoTecnicaService, ValidacaoTecnicaService>();
 builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
 builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
+builder.Services.AddScoped<IEntregavelGeradoService, EntregavelGeradoService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 // Configurar logging
 builder.Services.AddLogging(loggingBuilder => {
@@ -81,8 +88,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 // Apply migrations automatically (only for development)
