@@ -9,128 +9,183 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Configure DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        npgsqlOptions =>
-        {
-            npgsqlOptions.UseNodaTime(); // Para melhor suporte a DateOnly
-            npgsqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorCodesToAdd: null);
-        }));
-
-// Configuração do AWS S3
-builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-builder.Services.AddAWSService<IAmazonS3>();
-
-// Registrar UnitOfWork
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Registrar AutoMapper
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
-
-// Registrar Services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IProjetoService, ProjetoService>();
-builder.Services.AddScoped<IStakeHolderService, StakeHolderService>();
-builder.Services.AddScoped<IFuncionalidadeService, FuncionalidadeService>();
-builder.Services.AddScoped<IRequisitoService, RequisitoService>();
-builder.Services.AddScoped<IDocumentoLinkService, DocumentoLinkService>();
-builder.Services.AddScoped<IReuniaoService, ReuniaoService>();
-builder.Services.AddScoped<ITarefaService, TarefaService>();
-builder.Services.AddScoped<IValidacaoTecnicaService, ValidacaoTecnicaService>();
-builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
-builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
-builder.Services.AddScoped<IEntregavelGeradoService, EntregavelGeradoService>();
-builder.Services.AddScoped<IStorageService, StorageService>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-
-// Configurar logging
-builder.Services.AddLogging(loggingBuilder => {
-    loggingBuilder.AddConsole();
-    loggingBuilder.AddDebug();
-});
-
-// Configurar autenticação JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+try
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DevInsight API", Version = "v1" });
+    // Configuração inicial do logger
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .WriteTo.Console()
+        .WriteTo.File("logs/startup-log.txt", rollingInterval: RollingInterval.Day)
+        .CreateBootstrapLogger();
 
-    // Configuração do JWT no Swagger
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
+    Log.Information("Iniciando a aplicação DevInsight");
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Configuração do Serilog como provedor de logging principal
+    builder.Host.UseSerilog((context, services, configuration) =>
+        configuration.ReadFrom.Configuration(context.Configuration));
+
+    // Add services to the container.
+    builder.Services.AddControllers();
+
+    // Configure DbContext
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+            npgsqlOptions =>
             {
-                Reference = new OpenApiReference
+                npgsqlOptions.UseNodaTime();
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorCodesToAdd: null);
+            }));
+
+    // Configuração do AWS S3
+    builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+    builder.Services.AddAWSService<IAmazonS3>();
+
+    // Registrar UnitOfWork
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+    // Registrar AutoMapper
+    builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+    // Registrar Services
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IProjetoService, ProjetoService>();
+    builder.Services.AddScoped<IStakeHolderService, StakeHolderService>();
+    builder.Services.AddScoped<IFuncionalidadeService, FuncionalidadeService>();
+    builder.Services.AddScoped<IRequisitoService, RequisitoService>();
+    builder.Services.AddScoped<IDocumentoLinkService, DocumentoLinkService>();
+    builder.Services.AddScoped<IReuniaoService, ReuniaoService>();
+    builder.Services.AddScoped<ITarefaService, TarefaService>();
+    builder.Services.AddScoped<IValidacaoTecnicaService, ValidacaoTecnicaService>();
+    builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
+    builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
+    builder.Services.AddScoped<IEntregavelGeradoService, EntregavelGeradoService>();
+    builder.Services.AddScoped<IStorageService, StorageService>();
+    builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+    // Configurar autenticação JWT
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            };
+        });
+
+    // Configuração do Swagger
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "DevInsight API", Version = "v1" });
+
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    },
+                    Scheme = "oauth2",
+                    Name = "Bearer",
+                    In = ParameterLocation.Header
                 },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
+                new List<string>()
+            }
+        });
     });
-});
 
-var app = builder.Build();
+    var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Middleware de tratamento de erros global
+    app.UseExceptionHandler(exceptionHandlerApp =>
+    {
+        exceptionHandlerApp.Run(async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+
+            var contextFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+            if (contextFeature != null)
+            {
+                Log.Error(contextFeature.Error, "Erro não tratado");
+
+                await context.Response.WriteAsync(new
+                {
+                    StatusCode = context.Response.StatusCode,
+                    Message = "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                    Detailed = app.Environment.IsDevelopment() ? contextFeature.Error.Message : null
+                }.ToString());
+            }
+        });
+    });
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        app.UseDeveloperExceptionPage();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.MapControllers();
+
+    // Apply migrations automatically (only for development)
+    try
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<ApplicationDbContext>();
+
+            Log.Information("Aplicando migrações do banco de dados...");
+            context.Database.Migrate();
+            Log.Information("Migrações aplicadas com sucesso");
+        }
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "Falha ao aplicar migrações do banco de dados");
+        throw;
+    }
+
+    Log.Information("Aplicação iniciada com sucesso");
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-// Apply migrations automatically (only for development)
-using (var scope = app.Services.CreateScope())
+catch (Exception ex)
 {
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
+    Log.Fatal(ex, "Aplicação encerrada devido a uma exceção não tratada");
 }
-
-app.Run();
+finally
+{
+    Log.Information("Encerrando aplicação...");
+    Log.CloseAndFlush();
+}
