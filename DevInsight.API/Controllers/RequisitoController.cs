@@ -21,6 +21,7 @@ public class RequisitoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarRequisito(Guid projetoId, [FromBody] RequisitoCriacaoDTO requisitoDto)
     {
         try
@@ -78,6 +79,7 @@ public class RequisitoController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarRequisito(Guid projetoId, Guid id, [FromBody] RequisitoAtualizacaoDTO requisitoDto)
     {
         try

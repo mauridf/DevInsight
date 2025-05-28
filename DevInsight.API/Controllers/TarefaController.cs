@@ -22,6 +22,7 @@ public class TarefaController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarTarefa(Guid projetoId, [FromBody] TarefaCriacaoDTO tarefaDto)
     {
         try
@@ -102,6 +103,7 @@ public class TarefaController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarTarefa(Guid projetoId, Guid id, [FromBody] TarefaAtualizacaoDTO tarefaDto)
     {
         try
@@ -125,6 +127,7 @@ public class TarefaController : ControllerBase
     }
 
     [HttpPatch("{id}/status")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarStatus(Guid projetoId, Guid id, [FromBody] StatusTarefa status)
     {
         try

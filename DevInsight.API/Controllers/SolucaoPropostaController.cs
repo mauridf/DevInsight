@@ -60,6 +60,7 @@ public class SolucaoPropostaController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> Criar(Guid projetoId, [FromBody] SolucaoPropostaCriacaoDTO dto)
     {
         try
@@ -79,6 +80,7 @@ public class SolucaoPropostaController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> Atualizar(Guid projetoId, Guid id, [FromBody] SolucaoPropostaAtualizacaoDTO dto)
     {
         try

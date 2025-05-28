@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Amazon.S3;
 using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
@@ -171,6 +172,17 @@ try
         app.UseSwaggerUI();
         app.UseDeveloperExceptionPage();
     }
+
+    app.UseExceptionHandler("/error");
+    app.UseStatusCodePages(async context =>
+    {
+        if (context.HttpContext.Response.StatusCode == 403)
+        {
+            context.HttpContext.Response.ContentType = "application/json";
+            await context.HttpContext.Response.WriteAsync(
+                JsonSerializer.Serialize(new { error = "Acesso negado" }));
+        }
+    });
 
     app.UseHttpsRedirection();
     app.UseAuthentication();

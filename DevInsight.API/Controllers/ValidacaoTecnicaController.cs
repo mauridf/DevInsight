@@ -99,7 +99,7 @@ public class ValidacaoTecnicaController : ControllerBase
     }
 
     [HttpPatch("{id}/validar")]
-    [Authorize(Roles = "Admin,Consultor")]
+    [Authorize(Roles = "Admin,Consultor,Cliente")]
     public async Task<IActionResult> MarcarComoValidado(Guid projetoId, Guid id, [FromBody] string? observacao)
     {
         try

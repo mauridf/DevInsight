@@ -21,6 +21,7 @@ public class ReuniaoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarReuniao(Guid projetoId, [FromBody] ReuniaoCriacaoDTO reuniaoDto)
     {
         try
@@ -97,6 +98,7 @@ public class ReuniaoController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarReuniao(Guid projetoId, Guid id, [FromBody] ReuniaoAtualizacaoDTO reuniaoDto)
     {
         try

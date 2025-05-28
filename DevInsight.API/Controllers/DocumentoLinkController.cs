@@ -21,6 +21,7 @@ public class DocumentoLinkController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarDocumentoLink(Guid projetoId, [FromBody] DocumentoLinkCriacaoDTO documentoLinkDto)
     {
         try
@@ -78,6 +79,7 @@ public class DocumentoLinkController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarDocumentoLink(Guid projetoId, Guid id, [FromBody] DocumentoLinkAtualizacaoDTO documentoLinkDto)
     {
         try

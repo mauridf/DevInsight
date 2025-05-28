@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DevInsight.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,Consultor")]
 [ApiController]
 [Route("api/projetos/{projetoId}/stakeholders")]
 public class StakeHolderController : ControllerBase

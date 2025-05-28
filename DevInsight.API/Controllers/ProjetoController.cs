@@ -21,6 +21,7 @@ public class ProjetoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarProjeto([FromBody] ProjetoCriacaoDTO projetoDto)
     {
         try
@@ -107,6 +108,7 @@ public class ProjetoController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarProjeto(Guid id, [FromBody] ProjetoAtualizacaoDTO projetoDto)
     {
         try

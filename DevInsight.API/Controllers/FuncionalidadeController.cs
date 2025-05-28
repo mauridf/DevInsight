@@ -21,6 +21,7 @@ public class FuncionalidadeController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> CriarFuncionalidade(Guid projetoId, [FromBody] FuncionalidadeCriacaoDTO funcionalidadeDto)
     {
         try
@@ -78,6 +79,7 @@ public class FuncionalidadeController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Consultor")]
     public async Task<IActionResult> AtualizarFuncionalidade(Guid projetoId, Guid id, [FromBody] FuncionalidadeAtualizacaoDTO funcionalidadeDto)
     {
         try
