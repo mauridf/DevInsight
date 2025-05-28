@@ -81,6 +81,30 @@ try
     //builder.Services.AddScoped<IStorageService,LocalStorageService>();
     builder.Services.AddScoped<IDocumentGeneratorService, DocumentGeneratorService>();
 
+    // Configuração CORS
+    var corsSettings = builder.Configuration.GetSection("CorsSettings");
+    var allowedOrigins = corsSettings["AllowedOrigins"]?.Split(';') ?? Array.Empty<string>();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DevInsightPolicy", policy =>
+        {
+            if (builder.Environment.IsDevelopment() || allowedOrigins.Length == 0)
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            }
+            else
+            {
+                policy.WithOrigins(allowedOrigins)
+                      .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                      .WithHeaders("Authorization", "Content-Type", "Accept", "X-Requested-With")
+                      .AllowCredentials();
+            }
+        });
+    });
+
     // Configurar autenticação JWT
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -185,6 +209,7 @@ try
     });
 
     app.UseHttpsRedirection();
+    app.UseCors("DevInsightPolicy");
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
