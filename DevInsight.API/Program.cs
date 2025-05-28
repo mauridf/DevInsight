@@ -7,6 +7,7 @@ using DevInsight.Infrastructure.Data;
 using DevInsight.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -43,9 +44,17 @@ try
                     errorCodesToAdd: null);
             }));
 
-    // Configuração do AWS S3
-    builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-    builder.Services.AddAWSService<IAmazonS3>();
+    // Configuração do Storage
+    if (builder.Configuration.GetValue<bool>("UseAWSStorage"))
+    {
+        builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+        builder.Services.AddAWSService<IAmazonS3>();
+        builder.Services.AddScoped<IStorageService, StorageService>();
+    }
+    else
+    {
+        builder.Services.AddScoped<IStorageService, LocalStorageService>();
+    }
 
     // Registrar UnitOfWork
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -66,8 +75,10 @@ try
     builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
     builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
     builder.Services.AddScoped<IEntregavelGeradoService, EntregavelGeradoService>();
-    builder.Services.AddScoped<IStorageService, StorageService>();
+    //builder.Services.AddScoped<IStorageService, StorageService>();
     builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+    //builder.Services.AddScoped<IStorageService,LocalStorageService>();
+    builder.Services.AddScoped<IDocumentGeneratorService, DocumentGeneratorService>();
 
     // Configurar autenticação JWT
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -121,6 +132,14 @@ try
     });
 
     var app = builder.Build();
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "LocalStorage")),
+        RequestPath = "/storage",
+        ServeUnknownFileTypes = true // Apenas para desenvolvimento
+    });
 
     // Middleware de tratamento de erros global
     app.UseExceptionHandler(exceptionHandlerApp =>

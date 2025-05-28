@@ -31,4 +31,8 @@
     <ProjectReference Include="..\DevInsight.Infrastructure\DevInsight.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LocalStorage\" />
+  </ItemGroup>
+
 </Project>

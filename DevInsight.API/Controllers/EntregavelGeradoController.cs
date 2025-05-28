@@ -1,6 +1,9 @@
-﻿using DevInsight.Core.DTOs;
+﻿using System.Text;
+using DevInsight.Core.DTOs;
+using DevInsight.Core.Enums;
 using DevInsight.Core.Exceptions;
 using DevInsight.Core.Interfaces.Services;
+using DevInsight.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,13 +15,19 @@ namespace DevInsight.API.Controllers;
 public class EntregavelGeradoController : ControllerBase
 {
     private readonly IEntregavelGeradoService _entregavelService;
+    private readonly IDocumentGeneratorService _docService;
+    private readonly IStorageService _storageService;
     private readonly ILogger<EntregavelGeradoController> _logger;
 
     public EntregavelGeradoController(
         IEntregavelGeradoService entregavelService,
+        IDocumentGeneratorService docService,
+        IStorageService storageService,
         ILogger<EntregavelGeradoController> logger)
     {
         _entregavelService = entregavelService;
+        _docService = docService;
+        _storageService = storageService;
         _logger = logger;
     }
 
@@ -77,6 +86,59 @@ public class EntregavelGeradoController : ControllerBase
         {
             _logger.LogError(ex, "Erro ao listar entregáveis por projeto: {ProjetoId}", projetoId);
             return StatusCode(500, new { message = "Ocorreu um erro interno" });
+        }
+    }
+
+    [HttpPost("documento")]
+    public async Task<IActionResult> CriarEntregavelComDocumento(Guid projetoId, [FromBody] GerarDocumentoDTO documentoDto)
+    {
+        try
+        {
+            byte[] fileContent;
+            string fileName = $"doc_{DateTime.UtcNow:yyyyMMddHHmmss}";
+            string contentType;
+
+            switch (documentoDto.Formato)
+            {
+                case FormatoEntregavel.Pdf:
+                    fileContent = await _docService.GeneratePdfAsync(documentoDto.Conteudo, documentoDto.Formato);
+                    fileName += ".pdf";
+                    contentType = "application/pdf";
+                    break;
+
+                case FormatoEntregavel.MarkDown:
+                    var markdown = await _docService.GenerateMarkdownAsync(documentoDto.Conteudo);
+                    fileContent = Encoding.UTF8.GetBytes(markdown);
+                    fileName += ".md";
+                    contentType = "text/markdown";
+                    break;
+
+                default:
+                    return BadRequest("Formato de documento não suportado");
+            }
+
+            // Salvar no storage (S3 ou Local)
+            using var stream = new MemoryStream(fileContent);
+            var formFile = new FormFile(stream, 0, fileContent.Length, fileName, fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = contentType
+            };
+
+            var path = await _storageService.UploadFileAsync(formFile, "documentos", fileName);
+            var url = await _storageService.GetFileUrlAsync(path);
+
+            return Ok(new EntregavelGeradoCriacaoDTO
+            {
+                NomeArquivo = fileName,
+                UrlDownload = url,
+                Formato = documentoDto.Formato
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao gerar documento");
+            return StatusCode(500, "Erro ao gerar documento");
         }
     }
 

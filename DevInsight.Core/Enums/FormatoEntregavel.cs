@@ -4,5 +4,6 @@ public enum FormatoEntregavel
 {
     Pdf,
     Doc,
-    MarkDown
+    MarkDown,
+    Html
 }
