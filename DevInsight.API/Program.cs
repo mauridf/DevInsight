@@ -76,10 +76,11 @@ try
     builder.Services.AddScoped<IEntregaFinalService, EntregaFinalService>();
     builder.Services.AddScoped<ISolucaoPropostaService, SolucaoPropostaService>();
     builder.Services.AddScoped<IEntregavelGeradoService, EntregavelGeradoService>();
-    //builder.Services.AddScoped<IStorageService, StorageService>();
     builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-    //builder.Services.AddScoped<IStorageService,LocalStorageService>();
     builder.Services.AddScoped<IDocumentGeneratorService, DocumentGeneratorService>();
+    builder.Services.AddScoped<IPersonaChave, PersonaChaveService>();
+    builder.Services.AddScoped<IFaseProjetoService, FaseProjetoService>();
+    builder.Services.AddScoped<IEstimativaCusto, EstimativaCustoService>();
 
     // Configuração CORS
     var corsSettings = builder.Configuration.GetSection("CorsSettings");

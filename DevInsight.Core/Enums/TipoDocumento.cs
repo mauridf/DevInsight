@@ -2,11 +2,13 @@
 
 public enum TipoDocumento
 {
-    miro,
-    whimsical,
-    loom,
-    figma,
-    api,
-    github,
-    outro
+    Miro,
+    Lucidchart,
+    Drawio,
+    Whimsical,
+    Loom,
+    Figma,
+    Api,
+    Github,
+    Outro
 }

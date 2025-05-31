@@ -10,10 +10,16 @@ public class ProjetoConsultoria
     public Guid CriadoPorId { get; set; }
     public Usuario CriadoPor { get; set; } = null!;
     public DateOnly DataInicio { get; set; }
+    public DateOnly DataEntrega { get; set; }
+    public string Proposito { get; set; }
+    public string SituacaoAtual {  get; set; }
     public StatusProjeto Status { get; set; }
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
 
     // Relacionamentos
+    public ICollection<PersonasChave> PersonasChaves { get; set; } = new List<PersonasChave>();
+    public ICollection<FaseProjeto> FasesProjeto { get; set; } = new List<FaseProjeto>();
+    public ICollection<EstimativaCusto> EstimativaCustos { get; set; } = new List<EstimativaCusto>();
     public ICollection<StakeHolder> StakeHolders { get; set; } = new List<StakeHolder>();
     public ICollection<FuncionalidadeDesejada> Funcionalidades { get; set; } = new List<FuncionalidadeDesejada>();
     public ICollection<Requisito> Requisitos { get; set; } = new List<Requisito>();

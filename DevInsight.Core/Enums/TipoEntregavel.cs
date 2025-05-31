@@ -5,5 +5,8 @@ public enum TipoEntregavel
     Levantamento,
     Proposta,
     Roadmap,
-    Entrega
+    Entrega,
+    RelatorioConsultoria,
+    DocumentacaoTecnica,
+    PropostaComercial
 }

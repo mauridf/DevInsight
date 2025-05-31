@@ -12,6 +12,9 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         Usuarios = new Repository<Usuario>(_context);
         Projetos = new Repository<ProjetoConsultoria>(_context);
+        PersonasChaves = new Repository<PersonasChave>(_context);
+        FasesProjeto = new Repository<FaseProjeto>(_context);
+        EstimativasCustos = new Repository<EstimativaCusto>(_context);
         StakeHolders = new Repository<StakeHolder>(_context);
         Funcionalidades = new Repository<FuncionalidadeDesejada>(_context);
         Requisitos = new Repository<Requisito>(_context);
@@ -47,6 +50,12 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<SolucaoProposta> Solucoes { get; }
 
     public IRepository<EntregavelGerado> Entregaveis { get; }
+
+    public IRepository<PersonasChave> PersonasChaves { get; }
+
+    public IRepository<FaseProjeto> FasesProjeto { get; }
+
+    public IRepository<EstimativaCusto> EstimativasCustos { get; }
 
     public async Task<int> CompleteAsync()
     {

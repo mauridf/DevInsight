@@ -9,4 +9,7 @@ public interface IEntregavelGeradoService
     Task<IEnumerable<EntregavelGeradoConsultaDTO>> ListarPorProjetoAsync(Guid projetoId);
     Task<bool> ExcluirEntregavelAsync(Guid id);
     Task<string> GerarUrlDownloadAsync(Guid id);
+    Task<DadosRelatorioConsultoria> ObterDadosRelatorioConsultoriaAsync(Guid projetoId);
+    Task<byte[]> GeneratePdfFromHtmlAsync(string htmlContent);
+    Task<byte[]> GenerateDocxFromHtmlAsync(string htmlContent);
 }

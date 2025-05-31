@@ -3,7 +3,7 @@
 public enum FormatoEntregavel
 {
     Pdf,
-    Doc,
+    Docx,
     MarkDown,
     Html
 }

@@ -12,6 +12,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<ProjetoConsultoria> ProjetosConsultoria { get; set; }
+    public DbSet<PersonasChave> PersonasChaves { get; set; }
+    public DbSet<FaseProjeto> FaseProjetos {  get; set; }
+    public DbSet<EstimativaCusto> EstimativasCustos { get; set; }
     public DbSet<StakeHolder> StakeHolders { get; set; }
     public DbSet<FuncionalidadeDesejada> FuncionalidadesDesejadas { get; set; }
     public DbSet<Requisito> Requisitos { get; set; }
@@ -45,6 +48,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(p => p.Nome).HasMaxLength(200).IsRequired();
             entity.Property(p => p.Cliente).HasMaxLength(200).IsRequired();
             entity.Property(p => p.Status).HasConversion<string>();
+            entity.Property(p => p.Proposito).HasMaxLength(2000).IsRequired();
+            entity.Property(p => p.SituacaoAtual).HasMaxLength(2000).IsRequired();
 
             entity.HasOne(p => p.CriadoPor)
                   .WithMany(u => u.ProjetosCriados)
@@ -55,6 +60,9 @@ public class ApplicationDbContext : DbContext
         // Configuração para todas as entidades que relacionam com ProjetoConsultoria
         var projetoRelations = new[]
         {
+            typeof(PersonasChave),
+            typeof(FaseProjeto),
+            typeof(EstimativaCusto),
             typeof(StakeHolder),
             typeof(FuncionalidadeDesejada),
             typeof(Requisito),
@@ -76,6 +84,12 @@ public class ApplicationDbContext : DbContext
         }
 
         // Configurações específicas para algumas entidades
+        modelBuilder.Entity<PersonasChave>(entity =>
+        {
+            entity.Property(p => p.Perfil).HasConversion<string>();
+            entity.Property(p => p.Tipo).HasConversion<string>();
+        });
+
         modelBuilder.Entity<Requisito>(entity =>
         {
             entity.Property(r => r.TipoRequisito).HasConversion<string>();

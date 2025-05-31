@@ -3,6 +3,7 @@ using System;
 using DevInsight.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevInsight.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250530211930_NovosCamposProjeto")]
+    partial class NovosCamposProjeto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,80 +152,6 @@ namespace DevInsight.Infrastructure.Migrations
                     b.ToTable("EntregaveisGerados");
                 });
 
-            modelBuilder.Entity("DevInsight.Core.Entities.EstimativaCusto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasPrecision(6)
-                        .HasColumnType("timestamp(6) with time zone");
-
-                    b.Property<double>("CustoEstimado")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("EstimativaHoras")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Item")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("ProjetoConsultoriaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("ValorHoras")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetoConsultoriaId");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.ToTable("EstimativasCustos");
-                });
-
-            modelBuilder.Entity("DevInsight.Core.Entities.FaseProjeto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasPrecision(6)
-                        .HasColumnType("timestamp(6) with time zone");
-
-                    b.Property<int>("DuracaoEstimada")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Fase")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Objetivo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("ProjetoConsultoriaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetoId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetoConsultoriaId");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.ToTable("FaseProjetos");
-                });
-
             modelBuilder.Entity("DevInsight.Core.Entities.FuncionalidadeDesejada", b =>
                 {
                     b.Property<Guid>("Id")
@@ -250,47 +179,6 @@ namespace DevInsight.Infrastructure.Migrations
                     b.HasIndex("ProjetoId");
 
                     b.ToTable("FuncionalidadesDesejadas");
-                });
-
-            modelBuilder.Entity("DevInsight.Core.Entities.PersonasChave", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasPrecision(6)
-                        .HasColumnType("timestamp(6) with time zone");
-
-                    b.Property<string>("Necessidade")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Perfil")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Persona")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("ProjetoConsultoriaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Tipo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetoConsultoriaId");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.ToTable("PersonasChaves");
                 });
 
             modelBuilder.Entity("DevInsight.Core.Entities.ProjetoConsultoria", b =>
@@ -324,13 +212,7 @@ namespace DevInsight.Infrastructure.Migrations
 
                     b.Property<string>("Proposito")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("SituacaoAtual")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -520,10 +402,6 @@ namespace DevInsight.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("ProjetoConsultoriaId")
                         .HasColumnType("uuid");
 
@@ -676,55 +554,10 @@ namespace DevInsight.Infrastructure.Migrations
                     b.Navigation("Projeto");
                 });
 
-            modelBuilder.Entity("DevInsight.Core.Entities.EstimativaCusto", b =>
-                {
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", null)
-                        .WithMany("EstimativaCustos")
-                        .HasForeignKey("ProjetoConsultoriaId");
-
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Projeto");
-                });
-
-            modelBuilder.Entity("DevInsight.Core.Entities.FaseProjeto", b =>
-                {
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", null)
-                        .WithMany("FasesProjeto")
-                        .HasForeignKey("ProjetoConsultoriaId");
-
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Projeto");
-                });
-
             modelBuilder.Entity("DevInsight.Core.Entities.FuncionalidadeDesejada", b =>
                 {
                     b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", null)
                         .WithMany("Funcionalidades")
-                        .HasForeignKey("ProjetoConsultoriaId");
-
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Projeto");
-                });
-
-            modelBuilder.Entity("DevInsight.Core.Entities.PersonasChave", b =>
-                {
-                    b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", null)
-                        .WithMany("PersonasChaves")
                         .HasForeignKey("ProjetoConsultoriaId");
 
                     b.HasOne("DevInsight.Core.Entities.ProjetoConsultoria", "Projeto")
@@ -845,13 +678,7 @@ namespace DevInsight.Infrastructure.Migrations
 
                     b.Navigation("Entregaveis");
 
-                    b.Navigation("EstimativaCustos");
-
-                    b.Navigation("FasesProjeto");
-
                     b.Navigation("Funcionalidades");
-
-                    b.Navigation("PersonasChaves");
 
                     b.Navigation("Requisitos");
 

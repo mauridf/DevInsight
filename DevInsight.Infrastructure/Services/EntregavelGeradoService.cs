@@ -4,7 +4,13 @@ using DevInsight.Core.Entities;
 using DevInsight.Core.Exceptions;
 using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.Extensions.Logging;
+using Xceed.Words.NET;
+using static Amazon.Runtime.Internal.Settings.SettingsCollection;
+using ObjectSettings = DinkToPdf.ObjectSettings;
+
 
 namespace DevInsight.Infrastructure.Services;
 
@@ -14,17 +20,20 @@ public class EntregavelGeradoService : IEntregavelGeradoService
     private readonly IMapper _mapper;
     private readonly ILogger<EntregavelGeradoService> _logger;
     private readonly IStorageService _storageService;
+    private readonly IConverter _converter;
 
     public EntregavelGeradoService(
         IUnitOfWork unitOfWork,
         IMapper mapper,
         ILogger<EntregavelGeradoService> logger,
-        IStorageService storageService)
+        IStorageService storageService,
+        IConverter converter)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _logger = logger;
         _storageService = storageService;
+        _converter = converter;
     }
 
     public async Task<EntregavelGeradoConsultaDTO> CriarEntregavelAsync(EntregavelGeradoCriacaoDTO entregavelDto, Guid projetoId)
@@ -157,5 +166,61 @@ public class EntregavelGeradoService : IEntregavelGeradoService
             _logger.LogError(ex, "Erro ao gerar URL de download: {EntregavelId}", id);
             throw;
         }
+    }
+
+    public async Task<DadosRelatorioConsultoria> ObterDadosRelatorioConsultoriaAsync(Guid projetoId)
+    {
+        var projeto = await _unitOfWork.Projetos.GetByIdAsync(projetoId);
+        if (projeto == null)
+            throw new NotFoundException("Projeto não encontrado");
+
+        // Implemente a lógica para obter todos os dados necessários
+        return new DadosRelatorioConsultoria
+        {
+            NomeProjeto = projeto.Nome,
+            Cliente = projeto.Cliente,
+            Consultor = projeto.CriadoPor.Nome,
+            DataEntrega = projeto.DataEntrega,
+            Proposito = projeto.Proposito,
+            SituacaoAtual = projeto.SituacaoAtual,
+            // Preencha os demais campos conforme necessário
+        };
+    }
+
+    public Task<byte[]> GeneratePdfFromHtmlAsync(string htmlContent)
+    {
+        var doc = new HtmlToPdfDocument()
+        {
+            GlobalSettings = {
+            ColorMode = ColorMode.Color,
+            Orientation = Orientation.Portrait,
+            PaperSize = PaperKind.A4,
+            Margins = new MarginSettings { Top = 10, Bottom = 10, Left = 10, Right = 10 }
+        },
+            Objects = {
+            new ObjectSettings() {
+                HtmlContent = htmlContent,
+                WebSettings = { DefaultEncoding = "utf-8" },
+                HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                FooterSettings = { FontSize = 9, Center = "Gerado em: [date]" }
+            }
+        }
+        };
+
+        var pdfBytes = _converter.Convert(doc);
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateDocxFromHtmlAsync(string htmlContent)
+    {
+        using var memoryStream = new MemoryStream();
+        using var document = DocX.Create(memoryStream);
+
+        // Adiciona o conteúdo HTML como parágrafo
+        var paragraph = document.InsertParagraph();
+        paragraph.Append(htmlContent);
+
+        document.Save();
+        return Task.FromResult(memoryStream.ToArray());
     }
 }
