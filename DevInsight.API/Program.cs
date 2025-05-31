@@ -6,6 +6,8 @@ using DevInsight.Core.Interfaces.Services;
 using DevInsight.Core.Services;
 using DevInsight.Infrastructure.Data;
 using DevInsight.Infrastructure.Services;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -81,6 +83,7 @@ try
     builder.Services.AddScoped<IPersonaChave, PersonaChaveService>();
     builder.Services.AddScoped<IFaseProjetoService, FaseProjetoService>();
     builder.Services.AddScoped<IEstimativaCusto, EstimativaCustoService>();
+    builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
     // Configuração CORS
     var corsSettings = builder.Configuration.GetSection("CorsSettings");
