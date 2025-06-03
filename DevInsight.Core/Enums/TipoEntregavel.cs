@@ -2,11 +2,10 @@
 
 public enum TipoEntregavel
 {
-    Levantamento,
-    Proposta,
-    Roadmap,
-    Entrega,
     RelatorioConsultoria,
-    DocumentacaoTecnica,
-    PropostaComercial
+    DiagramaArquitetura,
+    EstrategiaDeploy,
+    FluxoAutenticacaoAutorizacao,
+    BancoDadosMER,
+    PadroesCodigoArquitetura
 }

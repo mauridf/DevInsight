@@ -33,8 +33,12 @@ public class ProjetoService : IProjetoService
                 throw new NotFoundException("Usuário não encontrado");
             }
 
+            // Primeiro mapeia o DTO para a entidade
             var projeto = _mapper.Map<ProjetoConsultoria>(projetoDto);
+
+            // Depois define as propriedades que precisam de lógica especial
             projeto.CriadoPorId = usuarioId;
+            projeto.CriadoPor = usuario;
             projeto.CriadoEm = DateTime.UtcNow;
 
             await _unitOfWork.Projetos.AddAsync(projeto);

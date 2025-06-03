@@ -11,7 +11,9 @@ public class ProjetoProfile : Profile
         // Mapeamento de Criação
         CreateMap<ProjetoCriacaoDTO, ProjetoConsultoria>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.CriadoPor, opt => opt.Ignore())
+            .ForMember(dest => dest.CriadoPor, opt => opt.Ignore()) // Será definido manualmente
+            .ForMember(dest => dest.CriadoPorId, opt => opt.Ignore()) // Será definido manualmente
+            .ForMember(dest => dest.CriadoEm, opt => opt.Ignore()) // Será definido manualmente
             .ForMember(dest => dest.PersonasChaves, opt => opt.Ignore())
             .ForMember(dest => dest.FasesProjeto, opt => opt.Ignore())
             .ForMember(dest => dest.EstimativaCustos, opt => opt.Ignore())

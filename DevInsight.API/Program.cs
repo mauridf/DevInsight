@@ -64,6 +64,7 @@ try
 
     // Registrar AutoMapper
     builder.Services.AddAutoMapper(typeof(Program).Assembly);
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     // Registrar Services
     builder.Services.AddScoped<IAuthService, AuthService>();

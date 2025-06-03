@@ -1,4 +1,5 @@
-﻿using DevInsight.Core.DTOs;
+﻿using System.Security.Claims;
+using DevInsight.Core.DTOs;
 using DevInsight.Core.Exceptions;
 using DevInsight.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -152,11 +153,19 @@ public class ProjetoController : ControllerBase
 
     private Guid GetUsuarioId()
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var usuarioId))
+        if (User.Identity?.IsAuthenticated != true)
         {
-            throw new UnauthorizedAccessException("Usuário não autenticado corretamente");
+            throw new UnauthorizedAccessException("Usuário não autenticado");
         }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                     User.FindFirstValue("id");
+
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var usuarioId))
+        {
+            throw new UnauthorizedAccessException("ID do usuário não encontrado ou inválido");
+        }
+
         return usuarioId;
     }
 }
