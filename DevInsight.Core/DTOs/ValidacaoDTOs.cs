@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DevInsight.Core.Entities;
 using DevInsight.Core.Enums;
 
 namespace DevInsight.Core.DTOs;
 
 public class ValidacaoTecnicaCriacaoDTO
 {
+    public Guid ProjetoId { get; set; }
     [Required]
     public TipoValidacao Tipo { get; set; }
     [Required]
@@ -20,6 +22,7 @@ public class ValidacaoTecnicaCriacaoDTO
 
 public class ValidacaoTecnicaAtualizacaoDTO
 {
+    public Guid ProjetoId { get; set; }
     [Required]
     public TipoValidacao Tipo { get; set; }
     [Required]
@@ -36,6 +39,8 @@ public class ValidacaoTecnicaAtualizacaoDTO
 public class ValidacaoTecnicaConsultaDTO
 {
     public Guid Id { get; set; }
+    public Guid ProjetoId { get; set; }
+    public ProjetoConsultoria Projeto { get; set; }
     public TipoValidacao Tipo { get; set; }
     public string Descricao { get; set; } = null!;
     public string Url { get; set; } = null!;

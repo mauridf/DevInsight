@@ -6,7 +6,6 @@ namespace DevInsight.Core.DTOs;
 public class FaseProjetoCriacaoDTO
 {
     public Guid ProjetoId { get; set; }
-    public ProjetoConsultoria Projeto { get; set; } = null!;
     public string Fase { get; set; }
     public string Objetivo { get; set; }
     public int DuracaoEstimada { get; set; }
@@ -15,7 +14,6 @@ public class FaseProjetoCriacaoDTO
 public class FaseProjetoAtualizacaoDTO
 {
     public Guid ProjetoId { get; set; }
-    public ProjetoConsultoria Projeto { get; set; } = null!;
     public string Fase { get; set; }
     public string Objetivo { get; set; }
     public int DuracaoEstimada { get; set; }

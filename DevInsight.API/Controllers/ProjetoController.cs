@@ -151,6 +151,22 @@ public class ProjetoController : ControllerBase
         }
     }
 
+    [HttpGet("dashboard/{usuarioId}")]
+    [Authorize(Roles = "Admin,Consultor")]
+    public async Task<IActionResult> GetDashboardData(Guid usuarioId)
+    {
+        try
+        {
+            var dashboardData = await _projetoService.ObterDadosDashboardAsync(usuarioId);
+            return Ok(dashboardData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter dados do dashboard");
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     private Guid GetUsuarioId()
     {
         if (User.Identity?.IsAuthenticated != true)

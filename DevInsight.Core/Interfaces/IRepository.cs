@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using DevInsight.Core.Entities;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace DevInsight.Core.Interfaces;

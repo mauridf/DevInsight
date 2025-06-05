@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DevInsight.Core.Entities;
 using DevInsight.Core.Enums;
 
 namespace DevInsight.Core.DTOs;
 
 public class EntregaFinalCriacaoDTO
 {
+    public Guid Id { get; set; }
+    public Guid ProjetoId { get; set; }
     [Required]
     [MaxLength(200)]
     public string Titulo { get; set; } = null!;
@@ -21,6 +24,8 @@ public class EntregaFinalCriacaoDTO
 
 public class EntregaFinalAtualizacaoDTO
 {
+    public Guid Id { get; set; }
+    public Guid ProjetoId { get; set; }
     [Required]
     [MaxLength(200)]
     public string Titulo { get; set; } = null!;
@@ -38,6 +43,8 @@ public class EntregaFinalAtualizacaoDTO
 public class EntregaFinalConsultaDTO
 {
     public Guid Id { get; set; }
+    public Guid ProjetoId { get; set; }
+    public ProjetoConsultoria Projeto { get; set; }
     public string Titulo { get; set; } = null!;
     public string Descricao { get; set; } = null!;
     public string UrlEntrega { get; set; } = null!;

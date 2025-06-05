@@ -5,7 +5,6 @@ namespace DevInsight.Core.DTOs;
 public class EstimativaCustoCriacaoDTO
 {
     public Guid ProjetoId { get; set; }
-    public ProjetoConsultoria Projeto { get; set; } = null!;
     public string Item { get; set; }
     public int EstimativaHoras { get; set; }
     public double ValorHoras { get; set; }
@@ -15,7 +14,6 @@ public class EstimativaCustoCriacaoDTO
 public class EstimativaCustoAtualizacaoDTO
 {
     public Guid ProjetoId { get; set; }
-    public ProjetoConsultoria Projeto { get; set; } = null!;
     public string Item { get; set; }
     public int EstimativaHoras { get; set; }
     public double ValorHoras { get; set; }

@@ -5,8 +5,9 @@ namespace DevInsight.Core.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
+    IProjetoRepository Projetos { get; }
     IRepository<Usuario> Usuarios { get; }
-    IRepository<ProjetoConsultoria> Projetos { get; }
+    //IRepository<ProjetoConsultoria> Projetos { get; }
     IRepository<PersonasChave> PersonasChaves { get; }
     IRepository<FaseProjeto> FasesProjeto { get; }
     IRepository<EstimativaCusto> EstimativasCustos { get; }

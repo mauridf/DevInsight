@@ -10,4 +10,5 @@ public interface IProjetoService
     Task<ProjetoConsultaDTO> AtualizarProjetoAsync(Guid id, ProjetoAtualizacaoDTO projetoDto);
     Task<bool> ExcluirProjetoAsync(Guid id);
     Task<IEnumerable<ProjetoConsultaDTO>> ListarPorUsuarioAsync(Guid usuarioId);
+    Task<DashboardDTO> ObterDadosDashboardAsync(Guid usuarioId);
 }

@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DevInsight.Core.Attributes;
+using DevInsight.Core.Entities;
 using DevInsight.Core.Enums;
 
 namespace DevInsight.Core.DTOs;
 
 public class TarefaCriacaoDTO
 {
+    public Guid ProjetoId { get; set; }
     [Required]
     [MaxLength(200)]
     public string Titulo { get; set; } = null!;
@@ -20,6 +22,7 @@ public class TarefaCriacaoDTO
 
 public class TarefaAtualizacaoDTO
 {
+    public Guid ProjetoId { get; set; }
     [Required]
     [MaxLength(200)]
     public string Titulo { get; set; } = null!;
@@ -35,6 +38,8 @@ public class TarefaAtualizacaoDTO
 public class TarefaConsultaDTO
 {
     public Guid Id { get; set; }
+    public Guid ProjetoId { get; set; }
+    public ProjetoConsultoria Projeto { get; set; }
     public string Titulo { get; set; } = null!;
     public string Descricao { get; set; } = null!;
     public StatusTarefa Status { get; set; }

@@ -10,8 +10,9 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
+        Projetos = new ProjetoRepository(_context);
         Usuarios = new Repository<Usuario>(_context);
-        Projetos = new Repository<ProjetoConsultoria>(_context);
+        //Projetos = new Repository<ProjetoConsultoria>(_context);
         PersonasChaves = new Repository<PersonasChave>(_context);
         FasesProjeto = new Repository<FaseProjeto>(_context);
         EstimativasCustos = new Repository<EstimativaCusto>(_context);
@@ -29,7 +30,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<Usuario> Usuarios { get; }
 
-    public IRepository<ProjetoConsultoria> Projetos { get; }
+    public IProjetoRepository Projetos { get; }
+    //public IRepository<ProjetoConsultoria> Projetos { get; }
 
     public IRepository<StakeHolder> StakeHolders { get; }
 

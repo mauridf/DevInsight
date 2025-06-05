@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevInsight.Core.DTOs;
 using DevInsight.Core.Entities;
+using DevInsight.Core.Enums;
 using DevInsight.Core.Exceptions;
 using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
@@ -160,6 +161,36 @@ public class ProjetoService : IProjetoService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao listar projetos por usuário: {UsuarioId}", usuarioId);
+            throw;
+        }
+    }
+
+    public async Task<DashboardDTO> ObterDadosDashboardAsync(Guid usuarioId)
+    {
+        try
+        {
+            // Verifica se o usuário existe
+            var usuario = await _unitOfWork.Usuarios.GetByIdAsync(usuarioId);
+            if (usuario == null)
+            {
+                _logger.LogWarning("Usuário não encontrado: {UsuarioId}", usuarioId);
+                throw new NotFoundException("Usuário não encontrado");
+            }
+
+            // Obtém todos os projetos do usuário
+            var projetos = await _unitOfWork.Projetos.GetByUsuarioIdAsync(usuarioId);
+
+            // Conta os projetos por status (agora usando Count() como método)
+            return new DashboardDTO
+            {
+                TotalProjetos = projetos.Count(),
+                ProjetosEmAndamento = projetos.Count(p => p.Status == StatusProjeto.EmAndamento),
+                ProjetosFinalizados = projetos.Count(p => p.Status == StatusProjeto.Finalizado)
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter dados do dashboard para o usuário: {UsuarioId}", usuarioId);
             throw;
         }
     }
