@@ -13,6 +13,7 @@ public class TarefaCriacaoDTO
     public string Titulo { get; set; } = null!;
     [Required]
     public string Descricao { get; set; } = null!;
+    public string Observacoes { get; set; }
     [Required]
     public StatusTarefa Status { get; set; }
     [Required]
@@ -28,6 +29,7 @@ public class TarefaAtualizacaoDTO
     public string Titulo { get; set; } = null!;
     [Required]
     public string Descricao { get; set; } = null!;
+    public string Observacoes { get; set; }
     [Required]
     public StatusTarefa Status { get; set; }
     [Required]

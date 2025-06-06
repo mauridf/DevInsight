@@ -34,7 +34,7 @@ public class ValidacaoTecnicaService : IValidacaoTecnicaService
 
             var validacao = _mapper.Map<ValidacaoTecnica>(validacaoDto);
             validacao.ProjetoId = projetoId;
-            validacao.Validado = false; // Nova validação começa como não validada
+            //validacao.Validado = false; // Nova validação começa como não validada
             validacao.CriadoEm = DateTime.UtcNow;
 
             await _unitOfWork.ValidacoesTecnicas.AddAsync(validacao);

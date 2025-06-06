@@ -16,6 +16,7 @@ public class ValidacaoTecnicaCriacaoDTO
     [Url]
     [MaxLength(500)]
     public string Url { get; set; } = null!;
+    public bool Validado { get; set; }
     [MaxLength(2000)]
     public string? Observacao { get; set; }
 }
@@ -32,6 +33,7 @@ public class ValidacaoTecnicaAtualizacaoDTO
     [Url]
     [MaxLength(500)]
     public string Url { get; set; } = null!;
+    public bool Validado { get; set; }
     [MaxLength(2000)]
     public string? Observacao { get; set; }
 }
