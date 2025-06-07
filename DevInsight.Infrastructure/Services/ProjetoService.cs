@@ -7,6 +7,7 @@ using DevInsight.Core.Interfaces;
 using DevInsight.Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevInsight.Infrastructure.Services;
 
@@ -191,6 +192,118 @@ public class ProjetoService : IProjetoService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao obter dados do dashboard para o usuário: {UsuarioId}", usuarioId);
+            throw;
+        }
+    }
+
+    public async Task<ProjetoConsultoria> ObterProjetoCompleto(Guid projetoId)
+    {
+        try
+        {
+            var projeto = await _unitOfWork.Projetos
+                .Query()
+                .Include(p => p.CriadoPor)
+                .Include(p => p.PersonasChaves)
+                .Include(p => p.FasesProjeto)
+                .Include(p => p.EstimativaCustos)
+                .Include(p => p.StakeHolders)
+                .Include(p => p.Funcionalidades)
+                .Include(p => p.Requisitos)
+                .Include(p => p.Documentos)
+                .Include(p => p.Reunioes)
+                .Include(p => p.Tarefas)
+                .Include(p => p.ValidacoesTecnicas)
+                .Include(p => p.Entregas)
+                .Include(p => p.Solucoes)
+                .Include(p => p.Entregaveis)
+                .FirstOrDefaultAsync(p => p.Id == projetoId);
+
+            if (projeto == null)
+            {
+                _logger.LogWarning("Projeto não encontrado: {ProjetoId}", projetoId);
+                throw new NotFoundException("Projeto não encontrado");
+            }
+
+            _logger.LogInformation("Projeto completo carregado: {ProjetoId}", projetoId);
+            return projeto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter projeto completo: {ProjetoId}", projetoId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<ValidacaoTecnica>> ObterValidacoesTecnicas(Guid projetoId)
+    {
+        try
+        {
+            var validacoes = await _unitOfWork.ValidacoesTecnicas
+                .GetAllAsync(v => v.ProjetoId == projetoId);
+
+            _logger.LogDebug("Validações técnicas encontradas: {Count}", validacoes.Count());
+            return validacoes;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter validações técnicas para o projeto: {ProjetoId}", projetoId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<EntregaFinal>> ObterEntregasFinais(Guid projetoId)
+    {
+        try
+        {
+            var entregas = await _unitOfWork.Entregas
+                .GetAllAsync(e => e.ProjetoId == projetoId);
+
+            _logger.LogDebug("Entregas finais encontradas: {Count}", entregas.Count());
+            return entregas;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter entregas finais para o projeto: {ProjetoId}", projetoId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<TarefaProjeto>> ObterTarefasKanban(Guid projetoId)
+    {
+        try
+        {
+            var tarefas = await _unitOfWork.Tarefas
+                .GetAllAsync(t => t.ProjetoId == projetoId);
+
+            _logger.LogDebug("Tarefas encontradas: {Count}", tarefas.Count());
+            return tarefas;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter tarefas para o projeto: {ProjetoId}", projetoId);
+            throw;
+        }
+    }
+
+    public async Task<SolucaoProposta> ObterSolucaoProposta(Guid projetoId)
+    {
+        try
+        {
+            var solucao = await _unitOfWork.Solucoes
+                .FirstOrDefaultAsync(s => s.ProjetoId == projetoId);
+
+            if (solucao == null)
+            {
+                _logger.LogWarning("Solução proposta não encontrada para o projeto: {ProjetoId}", projetoId);
+                throw new NotFoundException("Solução proposta não encontrada");
+            }
+
+            _logger.LogDebug("Solução proposta encontrada: {SolucaoId}", solucao.Id);
+            return solucao;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter solução proposta para o projeto: {ProjetoId}", projetoId);
             throw;
         }
     }

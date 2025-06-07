@@ -12,4 +12,6 @@ public interface IEntregavelGeradoService
     Task<DadosRelatorioConsultoria> ObterDadosRelatorioConsultoriaAsync(Guid projetoId);
     Task<byte[]> GeneratePdfFromHtmlAsync(string htmlContent);
     Task<byte[]> GenerateDocxFromHtmlAsync(string htmlContent);
+    Task<string> GenerateMarkdownFromHtmlAsync(string htmlContent);
+    Task<byte[]> GenerateExcelFromDataAsync<T>(IEnumerable<T> data);
 }

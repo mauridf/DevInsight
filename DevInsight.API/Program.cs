@@ -167,8 +167,7 @@ try
     {
         FileProvider = new PhysicalFileProvider(
         Path.Combine(builder.Environment.ContentRootPath, "LocalStorage")),
-        RequestPath = "/storage",
-        ServeUnknownFileTypes = true // Apenas para desenvolvimento
+        RequestPath = "/storage"
     });
 
     // Middleware de tratamento de erros global

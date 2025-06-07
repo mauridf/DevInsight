@@ -53,4 +53,14 @@ public class Repository<T> : IRepository<T> where T : class
 
         return await query.ToListAsync();
     }
+
+    public IQueryable<T> Query()
+    {
+        return _dbSet.AsQueryable();
+    }
+
+    public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.FirstOrDefaultAsync(predicate);
+    }
 }

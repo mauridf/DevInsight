@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Xceed.Words.NET;
 using static Amazon.Runtime.Internal.Settings.SettingsCollection;
 using ObjectSettings = DinkToPdf.ObjectSettings;
+using OfficeOpenXml;
+using System.Text;
 
 
 namespace DevInsight.Infrastructure.Services;
@@ -222,5 +224,96 @@ public class EntregavelGeradoService : IEntregavelGeradoService
 
         document.Save();
         return Task.FromResult(memoryStream.ToArray());
+    }
+
+    public async Task<string> GenerateMarkdownFromHtmlAsync(string htmlContent)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(htmlContent))
+                return string.Empty;
+
+            // Implementação mais robusta de conversão HTML para Markdown
+            var markdown = new StringBuilder(htmlContent);
+
+            // Substituições básicas
+            markdown.Replace("<h1>", "# ")
+                   .Replace("</h1>", "\n\n")
+                   .Replace("<h2>", "## ")
+                   .Replace("</h2>", "\n\n")
+                   .Replace("<h3>", "### ")
+                   .Replace("</h3>", "\n\n")
+                   .Replace("<p>", "")
+                   .Replace("</p>", "\n\n")
+                   .Replace("<br>", "\n")
+                   .Replace("<br/>", "\n")
+                   .Replace("<ul>", "")
+                   .Replace("</ul>", "\n")
+                   .Replace("<ol>", "")
+                   .Replace("</ol>", "\n")
+                   .Replace("<li>", "- ")
+                   .Replace("</li>", "\n")
+                   .Replace("<strong>", "**")
+                   .Replace("</strong>", "**")
+                   .Replace("<em>", "_")
+                   .Replace("</em>", "_");
+
+            // Remover tags HTML restantes
+            markdown = new StringBuilder(System.Text.RegularExpressions.Regex.Replace(
+                markdown.ToString(), "<.*?>", string.Empty));
+
+            return await Task.FromResult(markdown.ToString());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao converter HTML para Markdown");
+            throw;
+        }
+    }
+
+    public async Task<byte[]> GenerateExcelFromDataAsync<T>(IEnumerable<T> data)
+    {
+        try
+        {
+            if (data == null || !data.Any())
+                return Array.Empty<byte>();
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Definir o contexto de licença
+
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Dados");
+
+            // Obter propriedades do tipo T
+            var properties = typeof(T).GetProperties();
+
+            // Adicionar cabeçalhos
+            for (int i = 0; i < properties.Length; i++)
+            {
+                worksheet.Cells[1, i + 1].Value = properties[i].Name;
+                worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+            }
+
+            // Adicionar dados
+            var row = 2;
+            foreach (var item in data)
+            {
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    var value = properties[i].GetValue(item);
+                    worksheet.Cells[row, i + 1].Value = value?.ToString() ?? string.Empty;
+                }
+                row++;
+            }
+
+            // Autoajustar colunas
+            worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+            return await Task.FromResult(package.GetAsByteArray());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao gerar arquivo Excel");
+            throw;
+        }
     }
 }
